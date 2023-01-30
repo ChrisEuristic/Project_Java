@@ -36,7 +36,16 @@ public class ArrayListExam {
 				filePath = Paths.get("file2.txt");
 				byte[] bytes2 = Files.readAllBytes(filePath);
 				String fileToString2 = new String(bytes2);
-				String[] fileToStringArr2 = fileToString2.split(",");
+				String[] fileToStringArr2 = fileToString2.split(",|\r\n");
+								
+				for(int i=0; i<fileToStringArr1.length; i++) {
+					fileToStringArr1[i] = fileToStringArr1[i].trim();
+				}
+				
+				for(int i=0; i<fileToStringArr2.length; i++) {
+					fileToStringArr2[i] = fileToStringArr2[i].trim();
+				}
+				
 							
 				
 				String[] sarray = new String[20];
@@ -80,7 +89,6 @@ public class ArrayListExam {
 						}
 					}
 				}
-					
 				
 
 				System.out.println(list1);
