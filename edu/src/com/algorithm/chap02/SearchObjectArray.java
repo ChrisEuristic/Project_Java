@@ -92,15 +92,31 @@ public class SearchObjectArray {
 	lst2.add(new Fruit("구지뽕", 300));
 	System.out.println();
 	System.out.println("새로운 리스트2::");
-  for ( Fruit city: lst2)
-  	System.out.print(" " + city);
+	for ( Fruit city: lst2)
+		System.out.print(" " + city);
   	//Arrays.sort(lst2);
-  	Collections.sort(lst1, Comparator.naturalOrder());
+  	//Collections.sort(lst1, Comparator.naturalOrder());
+	
+	Collections.sort(lst1, new Comparator<Fruit>() {
+		public int compare(Fruit a, Fruit b) {
+			return a.compareTo(b);
+		}
+	});
+		
+	Collections.sort(lst1, (Fruit a, Fruit b) -> {
+		return a.compareTo(b);
+	});
+	
+	
   	Collections.sort(lst2, Comparator.naturalOrder());
 	System.out.println();
+	System.out.println("새로운 리스트1::");
+	for ( Fruit city: lst1)
+		System.out.print(" " + city);
+	System.out.println();
 	System.out.println("새로운 리스트2::");
-  for ( Fruit city: lst2)
-  	System.out.print(" " + city);
+	for ( Fruit city: lst2)
+		System.out.print(" " + city);
 
   
   	ArrayList<Fruit> lst3 = new ArrayList<Fruit>();
@@ -111,42 +127,61 @@ public class SearchObjectArray {
 	Fruit data2 = iter2.next();
   	//구현할 부분	
 	{	// Remove Stack Variable
-		boolean insertItem1 = false, insertItem2 = false;
+		boolean isBreak = false;
 		int list3Index = 0;
-		while(iter1.hasNext() || iter2.hasNext()) {
-			if(iter1.hasNext() && insertItem1)
-				data1 = iter1.next();
-			if(iter2.hasNext() && insertItem2)
-				data2 = iter2.next();
+		while(!isBreak) {
+			if(!iter1.hasNext() && !iter2.hasNext())
+				isBreak = true;
 			
-			if(data1.equals(data2)) {
-				if(data1.equals(lst3.get(list3Index))) {
-					list3Index++;
-					insertItem1 = true;
-					insertItem2 = true;
-					continue;
+			if(iter1.hasNext() && iter2.hasNext()) { // lst1, 2 모두 존재
+				if(data1.equals(data2)) {			// lst1과 lst2가 동일한 값인가?
+					if(data1.equals(lst3.get(list3Index))) { // lst3에도 있는 값인가?
+						list3Index++;
+						data1 = iter1.next();
+						data2 = iter2.next();
+						continue;
+					}
+					else {							// lst1,2에는 있지만 리스트에는 없는 값인가?
+						lst3.add(data1);
+						data1 = iter1.next();
+						data2 = iter2.next();
+						list3Index++;
+					}
 				}
 				else {
-					lst3.add(data1);
-					insertItem1 = true;
-					insertItem2 = true;
-					list3Index++;
+					if(data1.compareTo(data2) < 0) {// lst1의 값이 더 작은가?
+						lst3.add(data1);
+						data1 = iter1.next();
+					}
+					else {							// lst2의 값이 더 작은가?
+						lst3.add(data2);
+						data2 = iter2.next();
+					}
 				}
 			}
 			else {
-				if(data1.compareTo(data2) < 0) {
+				if(iter1.hasNext()) {				// lst1만 존재
 					lst3.add(data1);
-					insertItem2 = false;
-					insertItem1 = true;
+					data1 = iter1.next();
+					list3Index++;
 				}
-				else {
+				if(iter2.hasNext()) {				// lst2만 존재
 					lst3.add(data2);
-					insertItem1 = false;
-					insertItem2 = true;
+					data2 = iter2.next();
+					list3Index++;
 				}
 			}
 		}
 	}
+	if(data1.compareTo(data2) < 0) {// lst1의 값이 더 작은가?
+		lst3.add(data1);
+		lst3.add(data2);
+	}
+	else {							// lst2의 값이 더 작은가?
+		lst3.add(data2);
+		lst3.add(data1);
+	}
+	
 	
 	System.out.println();
   System.out.println("merge:: ");
@@ -170,6 +205,7 @@ public class SearchObjectArray {
 
 	Fruit [] fa = new Fruit[lst3.size()];
 	fa = lst3.toArray(fa);
+	
   int result3 = Arrays.binarySearch(fa, newFruit, cc);
 	System.out.println("\nArrays.binarySearch() 조회결과::" + lst3.get(result3));
 	/*

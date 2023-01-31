@@ -101,10 +101,11 @@ public class ArrayListExam {
 				Collections.sort(list1);
 				Collections.sort(list2);
 				
-
+				
+				System.out.println("여기부터");
 				System.out.println(list1);
 				System.out.println(list2);
-
+				System.out.println("여기까지");
 
 				ArrayList<String> list3 = new ArrayList<String>();
 	
