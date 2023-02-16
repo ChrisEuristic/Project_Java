@@ -16,7 +16,7 @@ class Item {
 
 public class CircleQueue {
 	
-	static final int QUEUE_SIZE = 10;
+	static final int QUEUE_SIZE = 4;
 	static Item circleQueue[] = new Item[QUEUE_SIZE];
 	static int front, rear;
 	static boolean isEmpty = true;
@@ -55,6 +55,7 @@ public class CircleQueue {
 	
 	static void print() {
 		int cursor = front;
+		int size = 0;
 		
 		if(isEmpty) {
 			System.out.println("원형 큐가 비어있습니다.");
@@ -64,8 +65,9 @@ public class CircleQueue {
 		do {
 			System.out.print(circleQueue[cursor] + " ");
 			cursor++; cursor %= QUEUE_SIZE;
+			size++;
 		} while(cursor != rear);
-		System.out.println();
+		System.out.println(size);
 	}
 
 	public static void main(String[] args) {
