@@ -88,10 +88,8 @@ public class EightQueen {
 		long start, end;
 		int board[][];
 		Point pointStack[];
-		int stackSize = 0;
-		int x = 0, y = 0;
+		int globalY = 0;
 		int width, height;
-		int emptyCount = 0;
 		
 		
 		/* --- 초기화 --- */
@@ -102,43 +100,60 @@ public class EightQueen {
 		board = new int[height][width]; // 체스판 크기 규정
 		pointStack = new Point[height + width];
 		
-		for(int i = 0; i < height; i++)
-			for(int j = 0; j < width; j++)
-				board[i][j] = 0;
 		
 		
-		while(x < height) {
-			if(checkAll(board, x, y, width, height)) {
-				y++; emptyCount++;
-				if(emptyCount >= width) {
-					Point temp = pop(pointStack, --stackSize);
-					board[temp.x][temp.y] = 0;
-					print(board);
-					System.out.println("===============================");
-					x = temp.x;
-					y = temp.y + 1;
-					emptyCount = y;
+		while(globalY < width) {
+			for(int i = 0; i < height; i++)
+				for(int j = 0; j < width; j++)
+					board[i][j] = 0;
+			
+			int x = 0;
+			int y = globalY;
+			int stackSize = 0;
+			int emptyCount = y;
+			while(x < height) {
+				if(checkAll(board, x, y, width, height)) {
+					y++; emptyCount++;
+
+					if(emptyCount >= width) {
+						if(--stackSize == -1) {
+							break;
+						}
+						Point temp = pop(pointStack, stackSize);
+						board[temp.x][temp.y] = 0;
+						//print(board);
+						//System.out.println("===============================");
+						x = temp.x;
+						y = temp.y + 1;
+						if(stackSize == 0) { 
+							globalY++; 
+						}
+						emptyCount = y;
+					}
+					if(y >= width) {
+						y = 0;
+						x++;
+					}
+					if(x >= height) break;
+					continue;
 				}
-				if(y >= width) {
-					y = 0;
+				else {
+					stackSize = push(pointStack, stackSize, x, y);
+					board[x][y] = 1;
 					x++;
+					emptyCount = 0;
+					//print(board);
+					//System.out.println("===============================");
+					y = 0;
 				}
-				if(x >= height) break;
-				continue;
 			}
-			else {
-				stackSize = push(pointStack, stackSize, x, y);
-				board[x][y] = 1;
-				x++;
-				emptyCount = 0;
-				print(board);
-				System.out.println("===============================");
-				y = 0;
-			}
+			if(globalY >= width) break;
+			
+			/* --- 출력 --- */
+			print(board);
+			System.out.println("===============================");
+			globalY++;
 		}
-		
-		/* --- 출력 --- */
-		//print(board);
 		end = System.currentTimeMillis();
 		System.out.println(((float)(end - start)) / 1000 + "초");
 	}
