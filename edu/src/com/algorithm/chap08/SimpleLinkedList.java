@@ -26,7 +26,7 @@ class LinkedList {
 		while(p != null) {
 			if(p.data == element) {
 				if(q == null)
-					p = null;
+					first = null;
 				else
 					q.link = p.link;
 				
