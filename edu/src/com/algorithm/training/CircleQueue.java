@@ -29,6 +29,7 @@ public class CircleQueue {
 		isEmpty = false;
 		circleQueue[rear] = new Item(data);
 		rear++; rear %= QUEUE_SIZE;
+		System.out.println("front = " + front + " rear = " + rear);
 	}
 	
 	static void pop() {
@@ -42,6 +43,7 @@ public class CircleQueue {
 			isEmpty = true;
 			System.out.println("원형 큐가 비었습니다.");
 		}
+		System.out.println("front = " + front + " rear = " + rear);
 	}
 	
 	static void clear() {
