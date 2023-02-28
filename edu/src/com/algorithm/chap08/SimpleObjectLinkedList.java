@@ -5,38 +5,33 @@ import java.util.Comparator;
 import java.util.Scanner;
 
 class SimpleObject {
-	static final int NO = 1; // 번호를 읽어 들일까요?
-	static final int NAME = 2; // 이름을 읽어 들일까요?
-
-	private String no; // 회원번호
+	private String num; // 회원번호
 	private String name; // 이름
+	
+	SimpleObject(String num, String name) {
+		this.num = num;
+		this.name = name;
+	}
 
 	// --- 문자열 표현을 반환 ---//
 	public String toString() {
-		return "(" + no + ") " + name;
+		return "(" + num + ") " + name;
 	}
 
-	// --- 데이터를 읽어 들임 ---//
-	void scanData(String guide, int sw) {
-		Scanner sc = new Scanner(System.in);
-		System.out.println(guide + "할 데이터를 입력하세요."+ sw);
+	public String getNum() {
+		return num;
+	}
 
-		if ((sw & NO) == NO) { //& 는 bit 연산자임 
-			System.out.print("번호: ");
-			no = sc.next();
-		}
-		if ((sw & NAME) == NAME) {
-			System.out.print("이름: ");
-			name = sc.next();
-		}
+	public String getName() {
+		return name;
 	}
 
 	// --- 회원번호로 순서를 매기는 comparator ---//
-	public static final Comparator<SimpleObject> NO_ORDER = new NoOrderComparator();
+	public static final Comparator<SimpleObject> NUM_ORDER = new NumOrderComparator();
 
-	private static class NoOrderComparator implements Comparator<SimpleObject> {
+	private static class NumOrderComparator implements Comparator<SimpleObject> {
 		public int compare(SimpleObject d1, SimpleObject d2) {
-			return (d1.no.compareTo(d2.no) > 0) ? 1 : (d1.no.compareTo(d2.no) < 0) ? -1 : 0;
+			return (d1.num.compareTo(d2.num) > 0) ? 1 : (d1.num.compareTo(d2.num) < 0) ? -1 : 0;
 		}
 	}
 
@@ -65,16 +60,59 @@ class ObjectLinkedList {
 		first = null;
 	}
 	
-	public boolean Delete(SimpleObject element) //delete the element
-	{
-		return true;
+	public boolean Delete(String element, Comparator<SimpleObject> comparator) { //delete the element
+		ObjectNode p = first, q = null;
+		
+		if(p == null)
+			return false;
+		
+		while(p != null) {
+			if(comparator == SimpleObject.NUM_ORDER) {
+				if(p.data.getNum().compareTo(element) == 0) {
+					if(q == null)
+						first = null;
+					else
+						q.link = p.link;
+					
+					return true;
+				}
+			} else {
+				if(p.data.getName().compareTo(element) == 0) {
+					if(q == null)
+						first = null;
+					else
+						q.link = p.link;
+					
+					return true;
+				}
+			}
+			
+			q = p;
+			p = p.link;
+		}
+		
+		return false;
 	}
 	
 	public void Show() { // 전체 리스트를 순서대로 출력한다.
-
+		ObjectNode p = first, q = null;
+		
+		if(p == null) {
+			System.out.println("리스트가 비어있음.");
+			return;
+		}
+		System.out.println();
+		do {
+			System.out.print(p.data + " ");
+			
+			q = p;
+			p = p.link;
+		} while(p != null);
+		System.out.println();
+		System.out.println();
 	}
 	
-	public void Add(SimpleObject element){ //임의 값을 삽입할 때 리스트가 오름차순으로 정렬이 되도록 한다 
+	public void Add(SimpleObject element, Comparator<SimpleObject> comparator){ //임의 값을 삽입할 때 리스트가 오름차순으로 정렬이 되도록 한다 
 		ObjectNode newNode = new ObjectNode(element);
 		ObjectNode p = first, q = null;
 		
@@ -84,30 +122,58 @@ class ObjectLinkedList {
 		}
 		
 		while(true) {
-			if(p.data  element) {
-				newNode.link = p;
-				if(q == null)
-					first = newNode;
-				else
-					q.link = newNode;
-				break;
-			} else {
-				q = p;
-				p = p.link;
-				if(p == null) {
-					q.link = newNode;
+			if(comparator == SimpleObject.NUM_ORDER) {
+				if(p.data.getNum().compareTo(element.getNum()) > 0) {
+					newNode.link = p;
+					if(q == null)
+						first = newNode;
+					else
+						q.link = newNode;
 					break;
+				} else {
+					q = p;
+					p = p.link;
+					if(p == null) {
+						q.link = newNode;
+						break;
+					}
+				}
+			} else {
+				if(p.data.getName().compareTo(element.getName()) > 0) {
+					newNode.link = p;
+					if(q == null)
+						first = newNode;
+					else
+						q.link = newNode;
+					break;
+				} else {
+					q = p;
+					p = p.link;
+					if(p == null) {
+						q.link = newNode;
+						break;
+					}
 				}
 			}
 		}
 	}
 	
-	public boolean Search(int number) { // 회원번호로 데이터 유무를 검색한다.
-		return true;
-	}
-	
-	public boolean Search(String data) { // 회원 이름으로 데이터 유무를 검색한다.
-		return true;
+	public boolean Search(String target, Comparator<SimpleObject> comparator) { // 회원번호로 데이터 유무를 검색한다.
+		ObjectNode p = first, q = null;
+		
+		while(p != null) {
+			if(comparator == SimpleObject.NUM_ORDER) {
+				if(p.data.getNum().compareTo(target) == 0)
+					return true;
+			} else {
+				if(p.data.getName().compareTo(target) == 0)
+					return true;
+			}
+			
+			q = p;
+			p = p.link;
+		}
+		return false;
 	}
 }
 
@@ -115,11 +181,11 @@ class ObjectLinkedList {
 public class SimpleObjectLinkedList {
 
 	 enum Menu {
-	        Add( "삽입"),
-	        Delete( "삭제"),
-	        Show( "인쇄"),
-	        Search( "검색"),
-	        Exit( "종료");
+	        Add("삽입"),
+	        Delete("삭제"),
+	        Show("인쇄"),
+	        Search("검색"),
+	        Exit("종료");
 
 	        private final String message;                // 표시할 문자열
 
@@ -163,19 +229,47 @@ public class SimpleObjectLinkedList {
 		ObjectLinkedList l = new ObjectLinkedList();
 		Scanner sc = new Scanner(System.in);
 		SimpleObject data = null;
+		Comparator<SimpleObject> comparator = null;
+		
 		System.out.println("inserted");
 	     l.Show();		
 	        do {
 	            switch (menu = SelectMenu()) {	             
 	             case Add :                           // 머리노드 삽입
-
-	    	         l.Add(data);
-	                     break;
+	            	 System.out.print("회원번호로 정렬하시려면 1번, 회원명으로 정렬하시려면 2번을 눌러주세요. >> ");
+	            	 int addType = sc.nextInt();
+	            	 switch(addType) {
+	            	 case 1:	comparator = SimpleObject.NUM_ORDER;
+	            	 			break;
+	            	 case 2:	comparator = SimpleObject.NAME_ORDER;
+	            	 			break;
+	            	 default: System.out.println("잘못 입력되었습니다. 초기 화면으로 돌아갑니다."); break;
+	            	 }
+	            	 
+	            	 System.out.print("추가할 회원번호 입력 : ");
+	            	 String addNum = sc.next();
+	            	 System.out.print("추가할 회원명 입력 : ");
+	            	 String addName = sc.next();
+	    	         l.Add(new SimpleObject(addNum, addName), comparator);
+	    	         break;
 	             case Delete :                          // 머리 노드 삭제
-	            	 System.out.print("삭제할 회원번호 입력 : ");
-	            	 int num = sc.nextInt();
-	            	 if(l.Delete(num))
-	            		 System.out.println("삭제된 회원은 " + num);
+	            	 System.out.print("회원번호로 삭제하시려면 1번, 회원명으로 삭제하시려면 2번을 눌러주세요. >> ");
+	            	 int delType = sc.nextInt();
+	            	 String delTarget = null;
+	            	 switch(delType) {
+	            	 case 1:	System.out.print("삭제할 회원번호 입력 : ");
+	            	 			comparator = SimpleObject.NUM_ORDER;
+	            	 			delTarget = sc.next();
+	            	 			break;
+	            	 case 2:	System.out.print("삭제할 회원명 입력 : ");
+	            	 			comparator = SimpleObject.NAME_ORDER;
+	            	 			delTarget = sc.next();
+	            	 			break;
+	            	 default: System.out.println("잘못 입력되었습니다. 초기 화면으로 돌아갑니다."); break;
+	            	 }
+	            	 
+	            	 if(l.Delete(delTarget, comparator))
+	            		 System.out.println("삭제된 데이터 : " + delTarget);
 	            	 else
 	            		 System.out.println("삭제할 데이터가 없습니다.");
 	            	 break;
@@ -183,19 +277,25 @@ public class SimpleObjectLinkedList {
 	                    l.Show();
 	                    break;
 	             case Search :                           // 회원 번호 검색
-	            	 System.out.println("회원번호와 이름 중 무엇으로 검색하시겠습니까?");
-	            	 System.out.print("1. 회원번호   2. 이름 >> ");
-	            	 switch(sc.nextInt()) {
-	            	 case 1: l.Search(sc.nextInt()); break;
-	            	 case 2: l.Search(sc.next());; break;
-	            	 default: break;
+	            	 System.out.print("회원번호로 검색하시려면 1번, 회원명으로 검색하시려면 2번을 눌러주세요. >> ");
+	            	 int searchType = sc.nextInt();
+	            	 String searchTarget = null;
+	            	 switch(searchType) {
+	            	 case 1:	System.out.print("검색할 회원번호 입력 : ");
+	            	 			comparator = SimpleObject.NUM_ORDER;
+	            	 			searchTarget = sc.next();
+	            	 			break;
+	            	 case 2:	System.out.print("검색할 회원명 입력 : ");
+	            	 			comparator = SimpleObject.NAME_ORDER;
+	            	 			searchTarget = sc.next();
+	            	 			break;
+	            	 default: System.out.println("잘못 입력되었습니다. 초기 화면으로 돌아갑니다."); break;
 	            	 }
-	                boolean result = l.search(n);
-	                    if (result == false)
-	                        System.out.println("검색 값 = " + n + "데이터가 없습니다.");
-	                    else
-	                        System.out.println("검색 값 = " + n + "데이터가 존재합니다.");
-	                     break;
+	            	 if (!l.Search(searchTarget, comparator))
+	            		 System.out.println(searchTarget + " 데이터가 없습니다.");
+	            	 else
+	            		 System.out.println(searchTarget + " 데이터가 존재합니다.");
+	            	 break;
 	             case Exit :                           // 꼬리 노드 삭제
 	                    break;
 	            }
